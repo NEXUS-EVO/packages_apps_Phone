@@ -1003,7 +1003,10 @@ public class InCallTouchUi extends FrameLayout
     @Override
     public void onReleased(View v, int handle) {
 
-    }
+    }   
+        public void onTargetChange(View v, int whichHandle) {
+
+        }
 
     /**
      * Handles "Answer" and "Reject" actions for an incoming call.
