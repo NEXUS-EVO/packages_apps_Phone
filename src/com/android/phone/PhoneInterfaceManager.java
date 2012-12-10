@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2006 The Android Open Source Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package com.android.phone;
 
@@ -51,8 +51,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Implementation of the ITelephony interface.
- */
+* Implementation of the ITelephony interface.
+*/
 public class PhoneInterfaceManager extends ITelephony.Stub {
     private static final String LOG_TAG = "PhoneInterfaceManager";
     private static final boolean DBG = (PhoneGlobals.DBG_LEVEL >= 2);
@@ -63,7 +63,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     private static final int CMD_HANDLE_NEIGHBORING_CELL = 2;
     private static final int EVENT_NEIGHBORING_CELL_DONE = 3;
     private static final int CMD_ANSWER_RINGING_CALL = 4;
-    private static final int CMD_END_CALL = 5;  // not used yet
+    private static final int CMD_END_CALL = 5; // not used yet
     private static final int CMD_SILENCE_RINGER = 6;
     private static final int CMD_TOGGLE_LTE = 7;
     private static final int CMD_TOGGLE_2G = 8;
@@ -77,9 +77,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     MainThreadHandler mMainThreadHandler;
 
     /**
-     * A request object for use with {@link MainThreadHandler}. Requesters should wait() on the
-     * request after sending. The main thread will notify the request when it is complete.
-     */
+* A request object for use with {@link MainThreadHandler}. Requesters should wait() on the
+* request after sending. The main thread will notify the request when it is complete.
+*/
     private static final class MainThreadRequest {
         /** The argument to use for the request */
         public Object argument;
@@ -92,17 +92,17 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * A handler that processes messages on the main thread in the phone process. Since many
-     * of the Phone calls are not thread safe this is needed to shuttle the requests from the
-     * inbound binder threads to the main thread in the phone process.  The Binder thread
-     * may provide a {@link MainThreadRequest} object in the msg.obj field that they are waiting
-     * on, which will be notified when the operation completes and will contain the result of the
-     * request.
-     *
-     * <p>If a MainThreadRequest object is provided in the msg.obj field,
-     * note that request.result must be set to something non-null for the calling thread to
-     * unblock.
-     */
+* A handler that processes messages on the main thread in the phone process. Since many
+* of the Phone calls are not thread safe this is needed to shuttle the requests from the
+* inbound binder threads to the main thread in the phone process. The Binder thread
+* may provide a {@link MainThreadRequest} object in the msg.obj field that they are waiting
+* on, which will be notified when the operation completes and will contain the result of the
+* request.
+*
+* <p>If a MainThreadRequest object is provided in the msg.obj field,
+* note that request.result must be set to something non-null for the calling thread to
+* unblock.
+*/
     private final class MainThreadHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -181,10 +181,10 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Posts the specified command to be executed on the main thread,
-     * waits for the request to complete, and returns the result.
-     * @see sendRequestAsync
-     */
+* Posts the specified command to be executed on the main thread,
+* waits for the request to complete, and returns the result.
+* @see sendRequestAsync
+*/
     private Object sendRequest(int command, Object argument) {
         if (Looper.myLooper() == mMainThreadHandler.getLooper()) {
             throw new RuntimeException("This method will deadlock if called from the main thread.");
@@ -208,25 +208,25 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Asynchronous ("fire and forget") version of sendRequest():
-     * Posts the specified command to be executed on the main thread, and
-     * returns immediately.
-     * @see sendRequest
-     */
+* Asynchronous ("fire and forget") version of sendRequest():
+* Posts the specified command to be executed on the main thread, and
+* returns immediately.
+* @see sendRequest
+*/
     private void sendRequestAsync(int command) {
         mMainThreadHandler.sendEmptyMessage(command);
     }
 
     /**
-     * Initialize the singleton PhoneInterfaceManager instance.
-     * This is only done once, at startup, from PhoneApp.onCreate().
-     */
+* Initialize the singleton PhoneInterfaceManager instance.
+* This is only done once, at startup, from PhoneApp.onCreate().
+*/
     /* package */ static PhoneInterfaceManager init(PhoneGlobals app, Phone phone) {
         synchronized (PhoneInterfaceManager.class) {
             if (sInstance == null) {
                 sInstance = new PhoneInterfaceManager(app, phone);
             } else {
-                Log.wtf(LOG_TAG, "init() called multiple times!  sInstance = " + sInstance);
+                Log.wtf(LOG_TAG, "init() called multiple times! sInstance = " + sInstance);
             }
             return sInstance;
         }
@@ -265,7 +265,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         // PENDING: should we just silently fail if phone is offhook or ringing?
         PhoneConstants.State state = mCM.getState();
         if (state != PhoneConstants.State.OFFHOOK && state != PhoneConstants.State.RINGING) {
-            Intent  intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mApp.startActivity(intent);
         }
@@ -380,9 +380,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * End a call based on call state
-     * @return true is a call was ended
-     */
+* End a call based on call state
+* @return true is a call was ended
+*/
     public boolean endCall() {
         enforceCallPermission();
         return (Boolean) sendRequest(CMD_END_CALL, null);
@@ -398,18 +398,18 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Make the actual telephony calls to implement answerRingingCall().
-     * This should only be called from the main thread of the Phone app.
-     * @see answerRingingCall
-     *
-     * TODO: it would be nice to return true if we answered the call, or
-     * false if there wasn't actually a ringing incoming call, or some
-     * other error occurred.  (In other words, pass back the return value
-     * from PhoneUtils.answerCall() or PhoneUtils.answerAndEndActive().)
-     * But that would require calling this method via sendRequest() rather
-     * than sendRequestAsync(), and right now we don't actually *need* that
-     * return value, so let's just return void for now.
-     */
+* Make the actual telephony calls to implement answerRingingCall().
+* This should only be called from the main thread of the Phone app.
+* @see answerRingingCall
+*
+* TODO: it would be nice to return true if we answered the call, or
+* false if there wasn't actually a ringing incoming call, or some
+* other error occurred. (In other words, pass back the return value
+* from PhoneUtils.answerCall() or PhoneUtils.answerAndEndActive().)
+* But that would require calling this method via sendRequest() rather
+* than sendRequestAsync(), and right now we don't actually *need* that
+* return value, so let's just return void for now.
+*/
     private void answerRingingCallInternal() {
         final boolean hasRingingCall = !mPhone.getRingingCall().isIdle();
         if (hasRingingCall) {
@@ -418,7 +418,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             if (hasActiveCall && hasHoldingCall) {
                 // Both lines are in use!
                 // TODO: provide a flag to let the caller specify what
-                // policy to use if both lines are in use.  (The current
+                // policy to use if both lines are in use. (The current
                 // behavior is hardwired to "answer incoming, end ongoing",
                 // which is how the CALL button is specced to behave.)
                 PhoneUtils.answerAndEndActive(mCM, mCM.getFirstActiveRingingCall());
@@ -445,10 +445,10 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Internal implemenation of silenceRinger().
-     * This should only be called from the main thread of the Phone app.
-     * @see silenceRinger
-     */
+* Internal implemenation of silenceRinger().
+* This should only be called from the main thread of the Phone app.
+* @see silenceRinger
+*/
     private void silenceRingerInternal() {
         if ((mCM.getState() == PhoneConstants.State.RINGING)
             && mApp.notifier.isRinging()) {
@@ -490,9 +490,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Helper thread to turn async call to {@link SimCard#supplyPin} into
-     * a synchronous one.
-     */
+* Helper thread to turn async call to {@link SimCard#supplyPin} into
+* a synchronous one.
+*/
     private static class UnlockSim extends Thread {
 
         private final IccCard mSimCard;
@@ -536,12 +536,12 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         }
 
         /*
-         * Use PIN or PUK to unlock SIM card
-         *
-         * If PUK is null, unlock SIM card with PIN
-         *
-         * If PUK is not null, unlock SIM card with PUK and set PIN code
-         */
+* Use PIN or PUK to unlock SIM card
+*
+* If PUK is null, unlock SIM card with PIN
+*
+* If PUK is not null, unlock SIM card with PUK and set PIN code
+*/
         synchronized boolean unlockSim(String puk, String pin) {
 
             while (mHandler == null) {
@@ -779,28 +779,28 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Make sure the caller has the READ_PHONE_STATE permission.
-     *
-     * @throws SecurityException if the caller does not have the required permission
-     */
+* Make sure the caller has the READ_PHONE_STATE permission.
+*
+* @throws SecurityException if the caller does not have the required permission
+*/
     private void enforceReadPermission() {
         mApp.enforceCallingOrSelfPermission(android.Manifest.permission.READ_PHONE_STATE, null);
     }
 
     /**
-     * Make sure the caller has the MODIFY_PHONE_STATE permission.
-     *
-     * @throws SecurityException if the caller does not have the required permission
-     */
+* Make sure the caller has the MODIFY_PHONE_STATE permission.
+*
+* @throws SecurityException if the caller does not have the required permission
+*/
     private void enforceModifyPermission() {
         mApp.enforceCallingOrSelfPermission(android.Manifest.permission.MODIFY_PHONE_STATE, null);
     }
 
     /**
-     * Make sure the caller has the CALL_PHONE permission.
-     *
-     * @throws SecurityException if the caller does not have the required permission
-     */
+* Make sure the caller has the CALL_PHONE permission.
+*
+* @throws SecurityException if the caller does not have the required permission
+*/
     private void enforceCallPermission() {
         mApp.enforceCallingOrSelfPermission(android.Manifest.permission.CALL_PHONE, null);
     }
@@ -829,64 +829,64 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Returns the CDMA ERI icon index to display
-     */
+* Returns the CDMA ERI icon index to display
+*/
     public int getCdmaEriIconIndex() {
         return mPhone.getCdmaEriIconIndex();
     }
 
     /**
-     * Returns the CDMA ERI icon mode,
-     * 0 - ON
-     * 1 - FLASHING
-     */
+* Returns the CDMA ERI icon mode,
+* 0 - ON
+* 1 - FLASHING
+*/
     public int getCdmaEriIconMode() {
         return mPhone.getCdmaEriIconMode();
     }
 
     /**
-     * Returns the CDMA ERI text,
-     */
+* Returns the CDMA ERI text,
+*/
     public String getCdmaEriText() {
         return mPhone.getCdmaEriText();
     }
 
     /**
-     * Returns true if CDMA provisioning needs to run.
-     */
+* Returns true if CDMA provisioning needs to run.
+*/
     public boolean needsOtaServiceProvisioning() {
         return mPhone.needsOtaServiceProvisioning();
     }
 
     /**
-     * Returns the unread count of voicemails
-     */
+* Returns the unread count of voicemails
+*/
     public int getVoiceMessageCount() {
         return mPhone.getVoiceMessageCount();
     }
 
     /**
-     * Returns the network type
-     */
+* Returns the network type
+*/
     public int getNetworkType() {
         return mPhone.getServiceState().getNetworkType();
     }
 
     /**
-     * @return true if a ICC card is present
-     */
+* @return true if a ICC card is present
+*/
     public boolean hasIccCard() {
         return mPhone.getIccCard().hasIccCard();
     }
 
     /**
-     * Return if the current radio is LTE on CDMA. This
-     * is a tri-state return value as for a period of time
-     * the mode may be unknown.
-     *
-     * @return {@link Phone#LTE_ON_CDMA_UNKNOWN}, {@link Phone#LTE_ON_CDMA_FALSE}
-     * or {@link PHone#LTE_ON_CDMA_TRUE}
-     */
+* Return if the current radio is LTE on CDMA. This
+* is a tri-state return value as for a period of time
+* the mode may be unknown.
+*
+* @return {@link Phone#LTE_ON_CDMA_UNKNOWN}, {@link Phone#LTE_ON_CDMA_FALSE}
+* or {@link PHone#LTE_ON_CDMA_TRUE}
+*/
     public int getLteOnCdmaMode() {
         return mPhone.getLteOnCdmaMode();
     }
